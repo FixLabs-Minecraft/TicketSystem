@@ -1,53 +1,60 @@
 # TicketSystem
-Plugin de tickets, denúncias e sugestões para Minecraft.
+Плагин тикетов, жалоб и предложений для Minecraft (Paper 26.2, Java 25+).
 
-## Recursos
+## Возможности
 
-- Sistema de ticket com acompanhamento e avaliação da staff.
-- Sistema de denúncias e sugestões.
-- Dados armazenados em banco de dados.
-- Mensagens totalmente customizadas.
+- Тикеты (вопросы игроков) с ответами персонала и оценкой ответа.
+- Жалобы на игроков и предложения.
+- Данные хранятся в SQLite (`plugins/TicketSystem/database.db`).
+- Все сообщения настраиваются в `plugins/TicketSystem/language/russian.yml`.
 
-## Módulos
+## Модули
 
-- Ticket | Ajuda
+### Тикеты
 
-| Comando | Descrição | Permissão |
+| Команда | Описание | Право |
 | ------ | ------ | ----- |
-| ticket help | Ajuda | 
-| ajudar \| support | Informa disponibilidade de ajuda | ticketsystem.ticket.staff
-| ticket \| ajuda | Envia pedido de ajuda | ticketsystem.ticket.use
-| tickets | Lista todos os tickets pendentes | ticketsystem.ticket.staff
-| ticket rate | Avaliar ticket | ticketsystem.ticket.staff
-| ticket response | Responder ticket | ticketsystem.ticket.staff
-| ticket stats | Estatísticas da staff | ticketsystem.ticket.admin
-| ticket teleport | Teleportar para o jogador | ticketsystem.ticket.staff
-| ticket view | Ver ticket | ticketsystem.ticket.staff
+| ticket help | Помощь |
+| support \| pomosh | Объявить, что вы готовы помочь | ticketsystem.ticket.staff
+| ticket \<вопрос\> \| vopros | Задать вопрос | ticketsystem.ticket.use
+| tickets | Список ожидающих тикетов (`-a` — отвеченные, `-p <ник>` — ответы сотрудника) | ticketsystem.ticket.staff
+| ticket rate | Оценить ответ | ticketsystem.ticket.use
+| ticket response | Ответить на тикет | ticketsystem.ticket.staff
+| ticket stats | Статистика персонала | ticketsystem.ticket.admin
+| ticket cancelall \<ник\> | Отменить все оценки сотрудника | ticketsystem.ticket.admin
+| ticket teleport | Телепорт к автору тикета | ticketsystem.ticket.staff
+| ticket view | Подробности тикета | ticketsystem.ticket.staff
 
-- Report | Denúncia
+### Жалобы
 
-| Comando | Descrição | Permissão |
+| Команда | Описание | Право |
 | ------ | ------ | ----- |
-| report help | Ajuda |
-| report \| reportar | Envia uma denúncia | ticketsystem.report.use
-| reports | Lista reports pendentes | ticketsystem.report.staff
-| report status | Altera o status do report | ticketsystem.report.staff
-| report teleport | Teleporta ao jogador reportado | ticketsystem.report.staff
-| report view | Ver report | ticketsystem.report.staff
+| report help | Помощь |
+| report \<ник\> [ссылка] [причина] \| zhaloba | Пожаловаться на игрока | ticketsystem.report.use
+| reports | Список жалоб | ticketsystem.report.staff
+| report status | Изменить статус жалобы | ticketsystem.report.staff
+| report teleport | Телепорт к нарушителю | ticketsystem.report.staff
+| report view | Подробности жалобы | ticketsystem.report.staff
 
-- Suggestion | Sugestão
+### Предложения
 
-| Comando | Descrição | Permissão |
+| Команда | Описание | Право |
 | ------ | ------ | ----- |
-| suggestion help | Ajuda |
-| suggestion \| sugestao | Envia uma sugestão | ticketsystem.suggestion.use
-| suggestions | Lista sugestões pendentes | ticketsystem.suggestion.staff
-| suggestion response | Responde a sugestão | ticketsystem.suggestion.staff
-| suggestion view | Ver sugestão | ticketsystem.suggestion.staff
+| suggestion help | Помощь |
+| suggestion \<текст\> \| idea | Отправить предложение | ticketsystem.suggestion.use
+| suggestions | Список предложений | ticketsystem.suggestion.staff
+| suggestion response | Ответить на предложение | ticketsystem.suggestion.staff
+| suggestion view | Подробности предложения | ticketsystem.suggestion.staff
 
-### Admin
-- Recarregar plugin:
+### Администрирование
+Перезагрузка конфигурации и языкового файла:
 ```sh
-ticketsystem reload ou ts reload
+ticketsystem reload  # или ts reload
 ```
-Permissão: ```ticketsystem.admin```
+Право: `ticketsystem.admin`
+
+## Сборка
+```sh
+mvn clean package
+```
+Готовый файл: `target/TicketSystem-2.0.0.jar`.
