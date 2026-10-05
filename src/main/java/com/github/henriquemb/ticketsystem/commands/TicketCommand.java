@@ -119,7 +119,7 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
             switch (args[0].toLowerCase()) {
                 case "rate":
                 case "avaliar":
-                case "reponse":
+                case "response":
                 case "responder":
                 case "teleport":
                 case "teleportar":
@@ -293,7 +293,12 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        TicketRatingEnum tre = TicketRatingEnum.valueOf(args[2]);
+        TicketRatingEnum tre = TicketRatingEnum.fromName(args[2]);
+
+        if (tre == null) {
+            m.sendMessage(p, messages.getString("ticket.rating.invalid"), "ticket");
+            return;
+        }
 
         if (tre == TicketRatingEnum.CANCELED) {
             if (!p.hasPermission("ticketsystem.ticket.admin")) {

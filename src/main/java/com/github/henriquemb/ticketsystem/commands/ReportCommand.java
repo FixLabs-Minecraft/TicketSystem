@@ -163,12 +163,12 @@ public class ReportCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        if (args.length < 2 || ReportStatusEnum.valueOf(args[2]) == null) {
+        if (args.length < 3 || ReportStatusEnum.fromName(args[2]) == null) {
             m.sendMessage(p, messages.getString("report.status.invalid"), "report");
             return;
         }
 
-        ReportStatusEnum reportStatus = ReportStatusEnum.valueOf(args[2]);
+        ReportStatusEnum reportStatus = ReportStatusEnum.fromName(args[2]);
 
         report.setStatus(reportStatus.getId());
 

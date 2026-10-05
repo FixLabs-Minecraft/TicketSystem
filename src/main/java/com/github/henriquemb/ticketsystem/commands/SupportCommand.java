@@ -29,8 +29,8 @@ public class SupportCommand implements CommandExecutor {
             return true;
         }
 
-        if (m.getSupportCommandDelay().containsKey(p)) {
-            long time = m.getSupportCommandDelay().get(p).getTime() + 60000L * config.getInt("support.cooldown");
+        if (m.getSupportCommandDelay().containsKey(p.getUniqueId())) {
+            long time = m.getSupportCommandDelay().get(p.getUniqueId()).getTime() + 60000L * config.getInt("support-cooldown", 10);
 
             if (new Timestamp(System.currentTimeMillis()).before(new Timestamp(time))) {
                 m.sendMessage(p, messages.getString("support-announcement.cooldown.message"), "ticket");
@@ -38,7 +38,7 @@ public class SupportCommand implements CommandExecutor {
             }
         }
 
-        m.getSupportCommandDelay().put(p, new Timestamp(System.currentTimeMillis()));
+        m.getSupportCommandDelay().put(p.getUniqueId(), new Timestamp(System.currentTimeMillis()));
 
         StringBuilder str = new StringBuilder();
         for (String msg : messages.getStringList("support-announcement.message")) {

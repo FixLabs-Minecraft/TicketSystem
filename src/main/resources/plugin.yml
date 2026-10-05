@@ -1,42 +1,74 @@
 name: TicketSystem
 version: '${project.version}'
 main: com.github.henriquemb.ticketsystem.TicketSystem
-api-version: 1.16
+api-version: '26.2'
+description: Тикеты, жалобы и предложения для игроков
 authors: [ henriquemb ]
 commands:
   ticket:
-    usage: /ticket
+    description: Задать вопрос администрации
+    usage: /ticket <вопрос>
     aliases:
-      - ajuda
-      - duvida
+      - vopros
+      - help-me
   tickets:
-    usage: /tickets
+    description: Список тикетов
+    usage: /tickets [страница] [-a | -p <ник>]
   report:
-    usage: /report
+    description: Пожаловаться на игрока
+    usage: /report <ник> [доказательство] [причина]
     aliases:
-      - reportar
-      - denunciar
+      - zhaloba
   reports:
-    usage: /reports
+    description: Список жалоб
+    usage: /reports [страница] [-a]
     aliases:
-      - denuncias
-  suggestions:
-    usage: /suggestions
-    aliases:
-      - sugestoes
-      - sugestões
+      - zhaloby
   suggestion:
-    usage: /suggestion
+    description: Отправить предложение
+    usage: /suggestion <предложение>
     aliases:
-      - sugestão
-      - sugestao
+      - predlozhenie
+      - idea
+  suggestions:
+    description: Список предложений
+    usage: /suggestions [страница] [-a]
+    aliases:
+      - predlozheniya
+      - ideas
   support:
+    description: Объявить, что вы готовы помочь игрокам
     usage: /support
     aliases:
-      - ajudar
+      - pomosh
       - helping
-      - helpfull
   ticketsystem:
-    usage: ticketsystem
+    description: Перезагрузить конфигурацию плагина
+    usage: /ticketsystem reload
     aliases:
       - ts
+permissions:
+  ticketsystem.ticket.use:
+    description: Создавать тикеты и оценивать ответы
+    default: true
+  ticketsystem.report.use:
+    description: Отправлять жалобы
+    default: true
+  ticketsystem.suggestion.use:
+    description: Отправлять предложения
+    default: true
+  ticketsystem.ticket.staff:
+    description: Просматривать тикеты, отвечать на них, /support
+    default: op
+  ticketsystem.report.staff:
+    description: Просматривать жалобы и менять их статус
+    default: op
+  ticketsystem.suggestion.staff:
+    description: Просматривать предложения и отвечать на них
+    default: op
+  ticketsystem.ticket.admin:
+    description: Статистика персонала, отмена оценок
+    default: op
+  ticketsystem.admin:
+    description: Перезагрузка плагина
+    default: op

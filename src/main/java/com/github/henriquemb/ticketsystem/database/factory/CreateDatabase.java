@@ -15,17 +15,17 @@ public class CreateDatabase {
 
             createTables(connection);
 
-            System.out.println("Banco de dados criado com sucesso");
+            TicketSystem.getMain().getLogger().info("База данных успешно инициализирована");
         }
         catch (Exception e) {
-            System.out.println(e.getMessage());
+            TicketSystem.getMain().getLogger().warning(e.getMessage());
         }
         finally {
             try {
                 if (connection != null) connection.close();
             }
             catch (SQLException e) {
-                System.out.println(e.getMessage());
+                TicketSystem.getMain().getLogger().warning(e.getMessage());
             }
         }
     }
@@ -48,7 +48,7 @@ public class CreateDatabase {
             stm.executeUpdate(suggestion);
         }
         catch (Exception e) {
-            System.out.println("Erro ao criar tabelas");
+            TicketSystem.getMain().getLogger().warning("Ошибка при создании таблиц");
             e.printStackTrace();
         }
         finally {
@@ -57,7 +57,7 @@ public class CreateDatabase {
                 if (conn != null) conn.close();
             }
             catch (Exception err) {
-                System.out.println("Erro ao criar tabelas");
+                TicketSystem.getMain().getLogger().warning("Ошибка при создании таблиц");
                 err.printStackTrace();
             }
         }

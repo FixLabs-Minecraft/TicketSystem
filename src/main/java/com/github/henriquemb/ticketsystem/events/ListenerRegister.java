@@ -7,6 +7,5 @@ public class ListenerRegister {
         pl.getServer().getPluginManager().registerEvents(new TicketListener(), pl);
         pl.getServer().getPluginManager().registerEvents(new ReportListener(), pl);
         pl.getServer().getPluginManager().registerEvents(new SuggestionListener(), pl);
-        pl.getServer().getPluginManager().registerEvents(new UpdateListener(), pl);
     }
 }

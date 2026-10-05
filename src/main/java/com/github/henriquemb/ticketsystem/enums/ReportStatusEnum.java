@@ -1,7 +1,6 @@
 package com.github.henriquemb.ticketsystem.enums;
 
 import com.github.henriquemb.ticketsystem.TicketSystem;
-import org.bukkit.configuration.file.FileConfiguration;
 
 public enum ReportStatusEnum {
     WAITING(0),
@@ -9,7 +8,6 @@ public enum ReportStatusEnum {
     REVIEW(2),
     REJECT(3);
 
-    private final FileConfiguration messages = TicketSystem.getMessages();
     private final int id;
 
     ReportStatusEnum(int id) {
@@ -21,14 +19,21 @@ public enum ReportStatusEnum {
     }
 
     public String getColor() {
-        return messages.getString(String.format("status.report.%s.color", this).toLowerCase());
+        return TicketSystem.getMessages().getString(String.format("status.report.%s.color", this).toLowerCase());
     }
 
     public String getName() {
-        return messages.getString(String.format("status.report.%s.name", this).toLowerCase());
+        return TicketSystem.getMessages().getString(String.format("status.report.%s.name", this).toLowerCase());
     }
 
     public String format() {
         return getColor() + getName();
+    }
+
+    public static ReportStatusEnum fromName(String name) {
+        for (ReportStatusEnum value : values()) {
+            if (value.name().equalsIgnoreCase(name)) return value;
+        }
+        return null;
     }
 }

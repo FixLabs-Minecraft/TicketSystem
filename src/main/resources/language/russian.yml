@@ -1,0 +1,271 @@
+# Формат сообщений:
+#   &a, &l, &#RRGGBB          — цвета и форматирование
+#   [текст](/команда hover=…) — кнопка, выполняющая команду
+#   [текст](suggest_command=/команда hover=…) — кнопка, вставляющая команду в чат
+reload: "&aКонфигурация успешно перезагружена."
+prefix:
+  ticket: "&8[&7Тикеты&8] &7» "
+  report: "&8[&7Жалобы&8] &7» "
+  suggestion: "&8[&7Предложения&8] &7» "
+status:
+  ticket:
+    canceled:
+      name: "Отменена"
+      color: "&8"
+    unavailable:
+      name: "Без оценки"
+      color: "&7"
+    terrible:
+      name: "Ужасно"
+      color: "&4"
+    bad:
+      name: "Плохо"
+      color: "&c"
+    regular:
+      name: "Нормально"
+      color: "&e"
+    good:
+      name: "Хорошо"
+      color: "&a"
+    great:
+      name: "Отлично"
+      color: "&2"
+  report:
+    waiting:
+      name: "Ожидает"
+      color: "&e"
+    accepted:
+      name: "Принята"
+      color: "&a"
+    reject:
+      name: "Отклонена"
+      color: "&c"
+    review:
+      name: "На рассмотрении"
+      color: "&6"
+permission:
+  no_permission: "&cУ вас нет прав."
+warnings:
+  only_players: "Эту команду могут использовать только игроки."
+  invalid_id: "&cУкажите корректный ID."
+error: "&cПроизошла непредвиденная ошибка, обратитесь к администрации."
+player:
+  not_found: "&cИгрок не в сети или не найден."
+  offline: "&cИгрок не в сети."
+pagination:
+  header: "\n&f&l» &bСтраница: &f<self> &bиз &f<total> &f&l«"
+  footer: "<button-back> <button-next>"
+  error:
+    invalid: "&cУкажите корректную страницу."
+    not_found: "&cСтраница не найдена."
+  buttons:
+    back:
+      label: "&f[&bНазад&f]"
+      hover: "&fПредыдущая страница"
+    next:
+      label: "&f[&bДалее&f]"
+      hover: "&fСледующая страница"
+ticket:
+  use_correct: "&cИспользование: /ticket <вопрос>"
+  not_found: "&cТикет не найден или уже отвечен."
+  empty: "&aТикетов нет."
+  shot: "&cПожалуйста, опишите вопрос подробнее (минимум 4 слова)."
+  success: "&aТикет успешно отправлен."
+  pending: "&bОжидают ответа тикетов: &f<total>"
+  rating_canceled: "&aОценка успешно отменена."
+  is_canceled: "&cОценка уже отменена."
+  new_ticket: "&bПоступил новый тикет <button-list>"
+  cancel_all:
+    empty: "&aТикеты не найдены."
+    success: "&cВсе оценки тикетов игрока <player> отменены."
+  view:
+    - "\n&b&m--------------------------------------------------"
+    - "&eID: &f#<id>"
+    - "&eИгрок: &f<player>"
+    - "&eВопрос: &f<ticket>"
+    - "<button-response> <button-teleport>"
+    - "&b&m--------------------------------------------------"
+  view-response:
+    - "\n&b&m--------------------------------------------------"
+    - "&eID: &f#<id>"
+    - "&eИгрок: &f<player>"
+    - "&eВопрос: &f<ticket>"
+    - "&eОтвет: &f<response>"
+    - "&eОтветил: &f<respondedBy>"
+    - "&eОценка: &f<rating> <button-invalid_rating>"
+    - "&b&m--------------------------------------------------"
+  response:
+    use_correct: "&cИспользование: /ticket response <id> <ответ>"
+    success: "&aОтвет на тикет отправлен."
+    message:
+      header: "\n&b&m--------------------------------------------------\n"
+      footer: "&b&m--------------------------------------------------\n"
+      content:
+        - "&eВопрос: &f<ticket>"
+        - "&eОтвет: &f<response>"
+        - "&eОтветил: &f<respondedBy>"
+        - "&eОцените ответ: <ratings>"
+  rating:
+    use_correct: "&cИспользование: /ticket rate <id> <оценка>"
+    invalid: "&cНекорректная оценка."
+    success: "&aСпасибо за оценку!"
+    not_author: "&cВы не можете оценить этот тикет."
+    rated: "&cВы уже оценили этот тикет."
+    announcement: "&a<player> получил оценку <rating>"
+  teleport:
+    success: "&aВы телепортированы."
+  help:
+    - "\n&b&m--------------------------------------------------"
+    - "&e/ticket <вопрос> &7- &fЗадать вопрос"
+    - "&e/tickets &7- &fСписок ожидающих тикетов"
+    - "&e/ticket response &7- &fОтветить на тикет"
+    - "&e/ticket view &7- &fПодробности тикета"
+    - "&e/ticket teleport &7- &fТелепортироваться к автору тикета"
+    - "&e/ticket rate &7- &fОценить ответ"
+    - "&e/ticket stats &7- &fСтатистика персонала"
+    - "&e/ticket cancelall &7- &fОтменить все оценки сотрудника"
+    - "&b&m--------------------------------------------------"
+  list: "&eИгрок: &f<player> &7| &eВопрос: &f<ticket-shot> <button-view> <button-teleport>"
+  stats:
+    list: "&eСотрудник: &f<player> &7| &eСредняя оценка: &f<average> <button-stats>"
+    detail:
+      - "&fСтатистика: &e<player>"
+      - " &eСредняя оценка: &f<average>"
+      - " &eВсего ответов: &f<total>"
+      - " &eС оценкой: &f<total-rate>"
+      - " &eБез оценки: &f<total-pending>"
+      - "&fПодробно:"
+      - " <ratings>"
+  buttons:
+    list:
+      label: "[Нажмите, чтобы открыть список]"
+      hover: "&aОткрыть список"
+    view:
+      label: "&a[Открыть]"
+      hover: "&aПодробнее"
+    teleport:
+      label: "&a[Телепорт]"
+      hover: "&aТелепортироваться"
+    response:
+      label: "&a[Ответить]"
+      hover: "&aОтветить"
+    stats:
+      label: "&a[Подробнее]"
+      hover: "&aСтатистика &f<player>"
+    invalid_rating:
+      label: "&c[Отменить оценку]"
+      hover: "&cАннулировать оценку"
+report:
+  use_correct: "&cИспользование: /report <ник> [доказательство] [причина]"
+  not_found: "&cЖалоба не найдена или уже рассмотрена."
+  empty: "&aЖалоб нет."
+  not_yourself: "&cНельзя пожаловаться на самого себя."
+  success: "&aЖалоба отправлена, спасибо!"
+  pending: "&bОжидают рассмотрения жалоб: &f<total>"
+  new_report: "&bПоступила новая жалоба <button-list>"
+  no_reason: "&fНе указано"
+  status:
+    invalid: "&cНекорректный статус."
+    change: "&aСтатус жалобы изменён на: <status>"
+    change_to: "&fИзменить статус на: "
+  view:
+    - "\n&b&m--------------------------------------------------"
+    - "&eID: &f#<id>"
+    - "&eОтправитель: &f<player>"
+    - "&eНарушитель: &f<reported>"
+    - "&eПричина: &f<reason>"
+    - "&eДоказательство: &f<evidence>"
+    - "&eСтатус: <status>"
+    - "<button-teleport>"
+    - "&b&m--------------------------------------------------"
+  view-response:
+    - "\n&b&m--------------------------------------------------"
+    - "&eID: &f#<id>"
+    - "&eОтправитель: &f<player>"
+    - "&eНарушитель: &f<reported>"
+    - "&eПричина: &f<reason>"
+    - "&eДоказательство: &f<evidence>"
+    - "&eСтатус: <status>"
+    - "&b&m--------------------------------------------------"
+  help:
+    - "\n&b&m--------------------------------------------------"
+    - "&e/report <ник> &7- &fПожаловаться на игрока"
+    - "&e/reports &7- &fСписок жалоб"
+    - "&e/report tp &7- &fТелепортироваться к нарушителю"
+    - "&e/report view &7- &fПодробности жалобы"
+    - "&e/report status &7- &fИзменить статус жалобы"
+    - "&b&m--------------------------------------------------"
+  list: "&eНарушитель: &f<reported> &7| &eПричина: &f<reason-shot> <button-view> <button-teleport>"
+  buttons:
+    list:
+      label: "[Нажмите, чтобы открыть список]"
+      hover: "&aОткрыть список"
+    view:
+      label: "&a[Открыть]"
+      hover: "&aПодробнее"
+    teleport:
+      label: "&a[Телепорт]"
+      hover: "&aТелепортироваться"
+suggestion:
+  use_correct: "&cИспользование: /suggestion <предложение>"
+  not_found: "&cПредложение не найдено или уже отвечено."
+  empty: "&aПредложений нет."
+  shot: "&cПожалуйста, опишите предложение подробнее."
+  success: "&aПредложение отправлено, спасибо!"
+  pending: "&bОжидают ответа предложений: &f<total>"
+  new_suggestion: "&bПоступило новое предложение <button-list>"
+  view:
+    - "\n&b&m--------------------------------------------------"
+    - "&eID: &f#<id>"
+    - "&eИгрок: &f<player>"
+    - "&eПредложение: &f<suggestion>"
+    - "<button-response>"
+    - "&b&m--------------------------------------------------\n"
+  view-response:
+    - "\n&b&m--------------------------------------------------"
+    - "&eID: &f#<id>"
+    - "&eИгрок: &f<player>"
+    - "&eПредложение: &f<suggestion>"
+    - "&eОтвет: &f<response>"
+    - "&eОтветил: &f<respondedBy>"
+    - "&b&m--------------------------------------------------\n"
+  response:
+    use_correct: "&cИспользование: /suggestion response <id> <ответ>"
+    success: "&aОтвет на предложение отправлен."
+    message:
+      header: "\n&b&m--------------------------------------------------\n"
+      footer: "&b&m--------------------------------------------------\n"
+      content:
+        - "&eИгрок: &f<player>"
+        - "&eПредложение: &f<suggestion>"
+        - "&eОтвет: &f<response>"
+        - "&eОтветил: &f<respondedBy>"
+  help:
+    - "\n&b&m--------------------------------------------------"
+    - "&e/suggestion <текст> &7- &fОтправить предложение"
+    - "&e/suggestions &7- &fСписок предложений"
+    - "&e/suggestion response &7- &fОтветить на предложение"
+    - "&e/suggestion view &7- &fПодробности предложения"
+    - "&b&m--------------------------------------------------"
+  list: "\n&eИгрок: &f<player> &7| &eПредложение: &f<suggestion-shot> <button-view>"
+  buttons:
+    list:
+      label: "[Нажмите, чтобы открыть список]"
+      hover: "&aОткрыть список"
+    view:
+      label: "&a[Открыть]"
+      hover: "&aПодробнее"
+    response:
+      label: "&a[Ответить]"
+      hover: "&aОтветить"
+support-announcement:
+  cooldown:
+    message: "&cПодождите, прежде чем снова объявлять о помощи."
+  message:
+    - "\n\n&c&m=================================================="
+    - "&fСотрудник &e<player> &fготов помочь с вашими вопросами."
+    - "<button-help>"
+    - "&c&m==================================================\n"
+  button-help:
+    label: "&e[Попросить помощи]"
+    hover: "&eЗадать вопрос игроку &f<player>"

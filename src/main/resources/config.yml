@@ -1,2 +1,6 @@
-language: english
+# Язык сообщений: имя файла из папки language (без .yml).
+# В комплекте: russian, english. Можно создать свой файл по образцу russian.yml.
+language: russian
+
+# Задержка между использованиями /support (в минутах)
 support-cooldown: 10

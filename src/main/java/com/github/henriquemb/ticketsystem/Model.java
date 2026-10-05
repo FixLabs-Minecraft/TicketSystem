@@ -1,15 +1,17 @@
 package com.github.henriquemb.ticketsystem;
 
-import de.themoep.minedown.MineDown;
+import com.github.henriquemb.ticketsystem.util.Text;
 import lombok.Data;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 
-import java.awt.*;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Data
 public class Model {
@@ -19,30 +21,30 @@ public class Model {
     private final String reportPrefix = messages.getString("prefix.report");
     private final String suggestionPrefix = messages.getString("prefix.suggestion");
 
-    private final Map<Player, Timestamp> supportCommandDelay = new HashMap<>();
+    private final Map<UUID, Timestamp> supportCommandDelay = new HashMap<>();
 
-    public void sendMessage(Player p, String message) {
+    public void sendMessage(CommandSender p, String message) {
         try {
-            p.spigot().sendMessage(MineDown.parse(message));
+            p.sendMessage(Text.parse(message));
         }
         catch (Exception e) {
-            TicketSystem.getMain().getServer().getConsoleSender().sendMessage(Color.RED + "[TicketSystem] Custom message not found, please check.");
-            p.spigot().sendMessage(MineDown.parse("&cInternal error."));
+            TicketSystem.getMain().getLogger().warning("Сообщение не найдено в языковом файле, проверьте его.");
+            p.sendMessage(Component.text("Внутренняя ошибка.", NamedTextColor.RED));
         }
     }
 
-    public void sendMessage(Player p, String message, String prefix) {
+    public void sendMessage(CommandSender p, String message, String prefix) {
         try {
             sendMessage(p, messages.getString(String.format("prefix.%s", prefix)).concat(message));
         }
         catch (Exception e) {
-            TicketSystem.getMain().getServer().getConsoleSender().sendMessage(Color.RED + "[TicketSystem] Custom message not found, please check.");
-            p.spigot().sendMessage(MineDown.parse("&cInternal error."));
+            TicketSystem.getMain().getLogger().warning("Сообщение не найдено в языковом файле, проверьте его.");
+            p.sendMessage(Component.text("Внутренняя ошибка.", NamedTextColor.RED));
         }
     }
 
     public void broadcastMessage(String message) {
-        Bukkit.getOnlinePlayers().forEach(player ->
-                player.spigot().sendMessage(MineDown.parse(message)));
+        Component component = Text.parse(message);
+        Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(component));
     }
 }

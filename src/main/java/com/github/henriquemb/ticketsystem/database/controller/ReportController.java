@@ -1,5 +1,6 @@
 package com.github.henriquemb.ticketsystem.database.controller;
 
+import com.github.henriquemb.ticketsystem.TicketSystem;
 import com.github.henriquemb.ticketsystem.database.factory.ConnectionFactory;
 import com.github.henriquemb.ticketsystem.database.model.ReportModel;
 
@@ -30,14 +31,14 @@ public class ReportController {
             if(rs.next()) id = rs.getInt(1);
         }
         catch (Exception e) {
-            System.out.println("Erro ao criar report");
+            TicketSystem.getMain().getLogger().warning("Ошибка при создании жалобы");
         }
         finally {
             try {
                 if (conn != null) conn.close();
             }
             catch (Exception e) {
-                System.out.println("Erro ao fechar conexão");
+                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
             }
         }
 
@@ -56,14 +57,14 @@ public class ReportController {
             pstm.execute();
         }
         catch (Exception e) {
-            System.out.println("Erro ao deletar report");
+            TicketSystem.getMain().getLogger().warning("Ошибка при удалении жалобы");
         }
         finally {
             try {
                 if (conn != null) conn.close();
             }
             catch (Exception e) {
-                System.out.println("Erro ao fechar conexão");
+                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
             }
         }
     }
@@ -86,14 +87,14 @@ public class ReportController {
             pstm.executeUpdate();
         }
         catch (Exception e) {
-            System.out.println("Erro ao atualizar report");
+            TicketSystem.getMain().getLogger().warning("Ошибка при обновлении жалобы");
         }
         finally {
             try {
                 if (conn != null) conn.close();
             }
             catch (Exception e) {
-                System.out.println("Erro ao fechar conexão");
+                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
             }
         }
     }
@@ -126,14 +127,14 @@ public class ReportController {
             );
         }
         catch (Exception e) {
-            System.out.println("Erro ao buscar reports");
+            TicketSystem.getMain().getLogger().warning("Ошибка при получении жалоб");
         }
         finally {
             try {
                 if (conn != null) conn.close();
             }
             catch (Exception e) {
-                System.out.println("Erro ao fechar conexão");
+                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
             }
         }
 
@@ -165,14 +166,14 @@ public class ReportController {
             }
         }
         catch (Exception e) {
-            System.out.println("Erro ao buscar reports");
+            TicketSystem.getMain().getLogger().warning("Ошибка при получении жалоб");
         }
         finally {
             try {
                 if (conn != null) conn.close();
             }
             catch (Exception e) {
-                System.out.println("Erro ao fechar conexão");
+                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
             }
         }
 
@@ -205,7 +206,7 @@ public class ReportController {
             }
         }
         catch (Exception e) {
-            System.out.println("Erro ao buscar reports");
+            TicketSystem.getMain().getLogger().warning("Ошибка при получении жалоб");
             e.printStackTrace();
         }
         finally {
@@ -213,7 +214,7 @@ public class ReportController {
                 if (conn != null) conn.close();
             }
             catch (Exception e) {
-                System.out.println("Erro ao fechar conexão");
+                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
             }
         }
 
@@ -248,14 +249,14 @@ public class ReportController {
             }
         }
         catch (Exception e) {
-            System.out.println("Erro ao buscar reports");
+            TicketSystem.getMain().getLogger().warning("Ошибка при получении жалоб");
         }
         finally {
             try {
                 if (conn != null) conn.close();
             }
             catch (Exception e) {
-                System.out.println("Erro ao fechar conexão");
+                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
             }
         }
 

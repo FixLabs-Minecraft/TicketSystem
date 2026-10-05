@@ -7,12 +7,14 @@ import com.github.henriquemb.ticketsystem.util.CustomConfig;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.util.Locale;
 
 public final class TicketSystem extends JavaPlugin {
+    private static final String DEFAULT_LANGUAGE = "russian";
+
     @Getter @Setter
     private static TicketSystem main;
     @Getter @Setter
@@ -22,25 +24,36 @@ public final class TicketSystem extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        Locale.setDefault(Locale.US);
-
         setMain(this);
 
-        if (!new File(getDataFolder().getAbsolutePath().concat("/config.yml")).exists()) {
-            getConfig().options().copyDefaults(true);
-            getMain().saveConfig();
-        }
-
-        CustomConfig.createCustomConfig("language/portuguese");
-        CustomConfig.createCustomConfig("language/english");
-
-        if (new File(getDataFolder().getAbsolutePath().concat("/language/") + getConfig().getString("language") + ".yml").exists())
-            setMessages(CustomConfig.createCustomConfig("language/".concat(getConfig().getString("language"))));
-        else setMessages(CustomConfig.createCustomConfig("language/portuguese"));
-
-        setModel(new Model());
+        saveDefaultConfig();
 
         new CreateDatabase();
+
+        load();
+    }
+
+    /**
+     * Перечитывает config.yml и языковой файл, заново регистрирует команды и слушатели.
+     */
+    public void reload() {
+        reloadConfig();
+        HandlerList.unregisterAll(this);
+        load();
+    }
+
+    private void load() {
+        CustomConfig.createCustomConfig("language/" + DEFAULT_LANGUAGE);
+        CustomConfig.createCustomConfig("language/english");
+
+        String language = getConfig().getString("language", DEFAULT_LANGUAGE);
+        if (!new File(getDataFolder(), "language/" + language + ".yml").exists()) {
+            getLogger().warning("Языковой файл language/" + language + ".yml не найден, используется " + DEFAULT_LANGUAGE + ".yml");
+            language = DEFAULT_LANGUAGE;
+        }
+        setMessages(CustomConfig.createCustomConfig("language/" + language));
+
+        setModel(new Model());
 
         new CommandRegister(this);
         new ListenerRegister(this);
@@ -48,6 +61,6 @@ public final class TicketSystem extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        // Логика выключения плагина
     }
 }

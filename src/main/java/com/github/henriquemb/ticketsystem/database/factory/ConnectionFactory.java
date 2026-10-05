@@ -25,7 +25,7 @@ public class ConnectionFactory {
             conn = DriverManager.getConnection(url, properties);
         }
         catch (Exception e) {
-            System.out.println("Erro ao criar conexão com banco de dados");
+            TicketSystem.getMain().getLogger().warning("Ошибка при подключении к базе данных: " + e.getMessage());
         }
 
         return conn;

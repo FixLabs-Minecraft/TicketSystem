@@ -1,5 +1,6 @@
 package com.github.henriquemb.ticketsystem.database.controller;
 
+import com.github.henriquemb.ticketsystem.TicketSystem;
 import com.github.henriquemb.ticketsystem.database.factory.ConnectionFactory;
 import com.github.henriquemb.ticketsystem.database.model.TicketModel;
 
@@ -34,14 +35,14 @@ public class TicketController {
             }
         }
         catch (Exception e) {
-            System.out.println("Erro ao buscar tickets");
+            TicketSystem.getMain().getLogger().warning("Ошибка при получении тикетов");
         }
         finally {
             try {
                 if (conn != null) conn.close();
             }
             catch (Exception e) {
-                System.out.println("Erro ao fechar conexão");
+                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
             }
         }
 
@@ -74,14 +75,14 @@ public class TicketController {
             }
         }
         catch (Exception e) {
-            System.out.println("Erro ao buscar tickets");
+            TicketSystem.getMain().getLogger().warning("Ошибка при получении тикетов");
         }
         finally {
             try {
                 if (conn != null) conn.close();
             }
             catch (Exception e) {
-                System.out.println("Erro ao fechar conexão");
+                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
             }
         }
 
@@ -105,14 +106,14 @@ public class TicketController {
             if(rs.next()) id = rs.getInt(1);
         }
         catch (Exception e) {
-            System.out.println("Erro ao criar ticket");
+            TicketSystem.getMain().getLogger().warning("Ошибка при создании тикета");
         }
         finally {
             try {
                 if (conn != null) conn.close();
             }
             catch (Exception e) {
-                System.out.println("Erro ao fechar conexão");
+                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
             }
         }
 
@@ -131,14 +132,14 @@ public class TicketController {
             pstm.execute();
         }
         catch (Exception e) {
-            System.out.println("Erro ao deletar ticket");
+            TicketSystem.getMain().getLogger().warning("Ошибка при удалении тикета");
         }
         finally {
             try {
                 if (conn != null) conn.close();
             }
             catch (Exception e) {
-                System.out.println("Erro ao fechar conexão");
+                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
             }
         }
     }
@@ -160,14 +161,14 @@ public class TicketController {
             pstm.executeUpdate();
         }
         catch (Exception e) {
-            System.out.println("Erro ao atualizar ticket");
+            TicketSystem.getMain().getLogger().warning("Ошибка при обновлении тикета");
         }
         finally {
             try {
                 if (conn != null) conn.close();
             }
             catch (Exception e) {
-                System.out.println("Erro ao fechar conexão");
+                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
             }
         }
     }
@@ -199,14 +200,14 @@ public class TicketController {
             );
         }
         catch (Exception e) {
-            System.out.println("Erro ao buscar ticket");
+            TicketSystem.getMain().getLogger().warning("Ошибка при получении тикета");
         }
         finally {
             try {
                 if (conn != null) conn.close();
             }
             catch (Exception e) {
-                System.out.println("Erro ao fechar conexão");
+                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
             }
         }
 

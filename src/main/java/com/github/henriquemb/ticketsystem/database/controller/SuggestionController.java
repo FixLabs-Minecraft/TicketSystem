@@ -1,5 +1,6 @@
 package com.github.henriquemb.ticketsystem.database.controller;
 
+import com.github.henriquemb.ticketsystem.TicketSystem;
 import com.github.henriquemb.ticketsystem.database.factory.ConnectionFactory;
 import com.github.henriquemb.ticketsystem.database.model.SuggestionModel;
 
@@ -32,14 +33,14 @@ public class SuggestionController {
             }
         }
         catch (Exception e) {
-            System.out.println("Erro ao buscar sugestão");
+            TicketSystem.getMain().getLogger().warning("Ошибка при получении предложений");
         }
         finally {
             try {
                 if (conn != null) conn.close();
             }
             catch (Exception e) {
-                System.out.println("Erro ao fechar conexão");
+                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
             }
         }
 
@@ -71,14 +72,14 @@ public class SuggestionController {
             }
         }
         catch (Exception e) {
-            System.out.println("Erro ao buscar sugestão");
+            TicketSystem.getMain().getLogger().warning("Ошибка при получении предложений");
         }
         finally {
             try {
                 if (conn != null) conn.close();
             }
             catch (Exception e) {
-                System.out.println("Erro ao fechar conexão");
+                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
             }
         }
 
@@ -98,14 +99,14 @@ public class SuggestionController {
             pstm.execute();
         }
         catch (Exception e) {
-            System.out.println("Erro ao criar sugestão");
+            TicketSystem.getMain().getLogger().warning("Ошибка при создании предложения");
         }
         finally {
             try {
                 if (conn != null) conn.close();
             }
             catch (Exception e) {
-                System.out.println("Erro ao fechar conexão");
+                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
             }
         }
     }
@@ -122,14 +123,14 @@ public class SuggestionController {
             pstm.execute();
         }
         catch (Exception e) {
-            System.out.println("Erro ao deletar sugestão");
+            TicketSystem.getMain().getLogger().warning("Ошибка при удалении предложения");
         }
         finally {
             try {
                 if (conn != null) conn.close();
             }
             catch (Exception e) {
-                System.out.println("Erro ao fechar conexão");
+                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
             }
         }
     }
@@ -150,14 +151,14 @@ public class SuggestionController {
             pstm.executeUpdate();
         }
         catch (Exception e) {
-            System.out.println("Erro ao deletar sugestão");
+            TicketSystem.getMain().getLogger().warning("Ошибка при удалении предложения");
         }
         finally {
             try {
                 if (conn != null) conn.close();
             }
             catch (Exception e) {
-                System.out.println("Erro ao fechar conexão");
+                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
             }
         }
     }
@@ -188,14 +189,14 @@ public class SuggestionController {
             );
         }
         catch (Exception e) {
-            System.out.println("Erro ao criar sugestão");
+            TicketSystem.getMain().getLogger().warning("Ошибка при создании предложения");
         }
         finally {
             try {
                 if (conn != null) conn.close();
             }
             catch (Exception e) {
-                System.out.println("Erro ao fechar conexão");
+                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
             }
         }
         return suggestion;
