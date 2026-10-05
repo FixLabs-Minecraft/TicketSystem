@@ -4,10 +4,10 @@ import com.github.henriquemb.ticketsystem.Model;
 import com.github.henriquemb.ticketsystem.TicketSystem;
 import com.github.henriquemb.ticketsystem.database.controller.SuggestionController;
 import com.github.henriquemb.ticketsystem.database.model.SuggestionModel;
+import com.github.henriquemb.ticketsystem.util.AntiSpam;
 import com.github.henriquemb.ticketsystem.util.PrepareMessages;
 import com.github.henriquemb.ticketsystem.util.ResponseMessages;
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -93,19 +93,23 @@ public class SuggestionCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        if (args.length < 4) {
-            m.sendMessage(p, messages.getString("suggestion.shot"), "suggestion");
+        String reason = String.join(" ", args);
+
+        if (!AntiSpam.hasEnoughWords(reason, "suggestion")) {
+            m.sendMessage(p, messages.getString("suggestion.shot")
+                    .replace("<min>", String.valueOf(TicketSystem.getSettings().limits("suggestion").minWords())), "suggestion");
             return;
         }
 
-        String reason = String.join(" ", args);
+        if (!AntiSpam.check(p, "suggestion")) return;
 
         controller.create(p.getName(), reason);
+        AntiSpam.mark(p, "suggestion");
         m.sendMessage(p, messages.getString("suggestion.success"), "suggestion");
 
         Bukkit.getOnlinePlayers().forEach(player -> {
             if (player.hasPermission("ticketsystem.suggestion.staff")) {
-                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 100, 1);
+                TicketSystem.getSettings().playNotification(player);
                 m.sendMessage(player, messages.getString("suggestion.new_suggestion")
                         .replace("<button-list>",
                                 String.format("[%s](/suggestions hover=%s)",

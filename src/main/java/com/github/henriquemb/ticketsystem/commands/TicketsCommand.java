@@ -75,7 +75,7 @@ public class TicketsCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        Pagination<TicketModel> pagination = new Pagination<>(tickets, 10);
+        Pagination<TicketModel> pagination = new Pagination<>(tickets, TicketSystem.getSettings().getPageSize());
 
         try {
             StringBuilder str = new StringBuilder();

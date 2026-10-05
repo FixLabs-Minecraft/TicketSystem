@@ -12,7 +12,6 @@ import java.sql.Timestamp;
 
 public class SupportCommand implements CommandExecutor {
     private final Model m = TicketSystem.getModel();
-    private final FileConfiguration config = TicketSystem.getMain().getConfig();
     private final FileConfiguration messages = TicketSystem.getMessages();
 
     @Override
@@ -30,7 +29,7 @@ public class SupportCommand implements CommandExecutor {
         }
 
         if (m.getSupportCommandDelay().containsKey(p.getUniqueId())) {
-            long time = m.getSupportCommandDelay().get(p.getUniqueId()).getTime() + 60000L * config.getInt("support-cooldown", 10);
+            long time = m.getSupportCommandDelay().get(p.getUniqueId()).getTime() + 60000L * TicketSystem.getSettings().getSupportCooldownMinutes();
 
             if (new Timestamp(System.currentTimeMillis()).before(new Timestamp(time))) {
                 m.sendMessage(p, messages.getString("support-announcement.cooldown.message"), "ticket");

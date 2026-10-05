@@ -5,9 +5,9 @@ import com.github.henriquemb.ticketsystem.TicketSystem;
 import com.github.henriquemb.ticketsystem.database.controller.ReportController;
 import com.github.henriquemb.ticketsystem.database.model.ReportModel;
 import com.github.henriquemb.ticketsystem.enums.ReportStatusEnum;
+import com.github.henriquemb.ticketsystem.util.AntiSpam;
 import com.github.henriquemb.ticketsystem.util.PrepareMessages;
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -58,13 +58,12 @@ public class ReportCommand implements CommandExecutor, TabCompleter {
                 help(p);
                 break;
             default:
-                String reason = null;
                 String evidence = null;
 
-                if (args.length >= 1 && (args[1].toLowerCase().startsWith("https://") || args[1].toLowerCase().startsWith("http://"))) evidence = args[1];
-                if (args.length >= 2) reason = String.join(" ", Arrays.copyOfRange(args, evidence != null ? 2 : 1, args.length));
+                if (args.length >= 2 && (args[1].toLowerCase().startsWith("https://") || args[1].toLowerCase().startsWith("http://"))) evidence = args[1];
+                String reason = String.join(" ", Arrays.copyOfRange(args, evidence != null ? 2 : 1, args.length)).trim();
 
-                create(p, args[0], evidence, reason);
+                create(p, args[0], evidence, reason.isEmpty() ? null : reason);
         }
 
         return true;
@@ -101,14 +100,16 @@ public class ReportCommand implements CommandExecutor, TabCompleter {
             }
         }
 
-        if (args.length <= 0) {
-            Bukkit.getOnlinePlayers().forEach(p -> tb.add(p.getName()));
+        if (args.length <= 1) {
+            Bukkit.getOnlinePlayers().forEach(p -> {
+                if (!p.getName().equals(sender.getName())) tb.add(p.getName());
+            });
         }
 
         return tb;
     }
 
-    private void create(Player p, String reported, String reason, String evidence) {
+    private void create(Player p, String reported, String evidence, String reason) {
         if (!p.hasPermission("ticketsystem.report.use")) {
             m.sendMessage(p, messages.getString("permission.no_permission"), "report");
             return;
@@ -126,12 +127,24 @@ public class ReportCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        controller.create(p.getName(), reported, reason, evidence);
+        if (!AntiSpam.hasEnoughWords(reason == null ? "" : reason, "report")) {
+            m.sendMessage(p, messages.getString("report.shot")
+                    .replace("<min>", String.valueOf(TicketSystem.getSettings().limits("report").minWords())), "report");
+            return;
+        }
+
+        if (!AntiSpam.check(p, "report")) return;
+
+        if (controller.create(p.getName(), t.getName(), evidence, reason) <= 0) {
+            m.sendMessage(p, messages.getString("error"), "report");
+            return;
+        }
+        AntiSpam.mark(p, "report");
         m.sendMessage(p, messages.getString("report.success"), "report");
 
         Bukkit.getOnlinePlayers().forEach(player -> {
             if (player.hasPermission("ticketsystem.report.staff")) {
-                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 100, 1);
+                TicketSystem.getSettings().playNotification(player);
                 m.sendMessage(                        player,
                         Objects.requireNonNull(messages.getString("report.new_report"))
                                 .replace("<button-list>",

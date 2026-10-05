@@ -65,7 +65,7 @@ public class ReportsCommand implements CommandExecutor {
             return true;
         }
 
-        Pagination<ReportModel> pagination = new Pagination<>(reports, 10);
+        Pagination<ReportModel> pagination = new Pagination<>(reports, TicketSystem.getSettings().getPageSize());
 
         try {
             StringBuilder str = new StringBuilder();

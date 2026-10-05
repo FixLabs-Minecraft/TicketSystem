@@ -4,7 +4,17 @@ main: com.github.henriquemb.ticketsystem.TicketSystem
 api-version: '26.2'
 description: Тикеты, жалобы и предложения для игроков
 authors: [ henriquemb ]
+# Скачиваются сервером при первом запуске (пул соединений и драйверы баз данных)
+libraries:
+  - com.zaxxer:HikariCP:7.1.0
+  - com.mysql:mysql-connector-j:9.6.0
+  - org.xerial:sqlite-jdbc:3.51.3.0
 commands:
+  ticketmenu:
+    description: Открыть меню тикетов
+    usage: /ticketmenu
+    aliases:
+      - tmenu
   ticket:
     description: Задать вопрос администрации
     usage: /ticket <вопрос>
@@ -71,4 +81,7 @@ permissions:
     default: op
   ticketsystem.admin:
     description: Перезагрузка плагина
+    default: op
+  ticketsystem.bypass.antispam:
+    description: Без задержек и лимитов на тикеты, жалобы и предложения
     default: op

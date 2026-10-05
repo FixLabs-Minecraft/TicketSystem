@@ -1,224 +1,73 @@
 package com.github.henriquemb.ticketsystem.database.controller;
 
-import com.github.henriquemb.ticketsystem.TicketSystem;
-import com.github.henriquemb.ticketsystem.database.factory.ConnectionFactory;
+import com.github.henriquemb.ticketsystem.database.Database;
 import com.github.henriquemb.ticketsystem.database.model.SuggestionModel;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.List;
 
 public class SuggestionController {
-    private List<SuggestionModel> search(String sql) {
-        Connection conn = null;
-        List<SuggestionModel> suggestions = new ArrayList<>();
-
-        try {
-            conn = ConnectionFactory.createConnection();
-            ResultSet rset = conn.prepareStatement(sql).executeQuery();
-
-            while (rset.next()) {
-                suggestions.add(new SuggestionModel(
-                        rset.getInt(1),
-                        rset.getString(2),
-                        rset.getString(3),
-                        rset.getString(4),
-                        rset.getString(5),
-                        rset.getTimestamp(6),
-                        rset.getBoolean(7),
-                        rset.getTimestamp(8)
-                ));
-            }
-        }
-        catch (Exception e) {
-            TicketSystem.getMain().getLogger().warning("Ошибка при получении предложений");
-        }
-        finally {
-            try {
-                if (conn != null) conn.close();
-            }
-            catch (Exception e) {
-                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
-            }
-        }
-
-        return suggestions;
+    private static SuggestionModel map(ResultSet rs) throws SQLException {
+        return new SuggestionModel(
+                rs.getInt("id"),
+                rs.getString("player"),
+                rs.getString("suggestion"),
+                rs.getString("response"),
+                rs.getString("respondedBy"),
+                rs.getTimestamp("respondedAt"),
+                rs.getBoolean("send"),
+                rs.getTimestamp("timestamp")
+        );
     }
 
     private List<SuggestionModel> searchByPlayer(String sql, String player) {
-        Connection conn = null;
-        List<SuggestionModel> suggestions = new ArrayList<>();
-
-        try {
-            conn = ConnectionFactory.createConnection();
-            PreparedStatement pstm = conn.prepareStatement(sql);
-            pstm.setString(1, player);
-
-            ResultSet rset = pstm.executeQuery();
-
-            while (rset.next()) {
-                suggestions.add(new SuggestionModel(
-                        rset.getInt(1),
-                        rset.getString(2),
-                        rset.getString(3),
-                        rset.getString(4),
-                        rset.getString(5),
-                        rset.getTimestamp(6),
-                        rset.getBoolean(7),
-                        rset.getTimestamp(8)
-                ));
-            }
-        }
-        catch (Exception e) {
-            TicketSystem.getMain().getLogger().warning("Ошибка при получении предложений");
-        }
-        finally {
-            try {
-                if (conn != null) conn.close();
-            }
-            catch (Exception e) {
-                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
-            }
-        }
-
-        return suggestions;
+        return Database.query(sql, st -> st.setString(1, player), SuggestionController::map);
     }
 
     public void create(String player, String suggestion) {
-        Connection conn = null;
-        String sql = "INSERT INTO suggestion (player, suggestion) VALUES (?, ?)";
-
-        try {
-            conn = ConnectionFactory.createConnection();
-            PreparedStatement pstm = conn.prepareStatement(sql);
-            pstm.setString(1, player);
-            pstm.setString(2, suggestion);
-
-            pstm.execute();
-        }
-        catch (Exception e) {
-            TicketSystem.getMain().getLogger().warning("Ошибка при создании предложения");
-        }
-        finally {
-            try {
-                if (conn != null) conn.close();
-            }
-            catch (Exception e) {
-                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
-            }
-        }
+        Database.insert("INSERT INTO suggestion (player, suggestion) VALUES (?, ?)", st -> {
+            st.setString(1, player);
+            st.setString(2, suggestion);
+        });
     }
 
     public void delete(int id) {
-        Connection conn = null;
-        String sql = "DELETE FROM suggestion WHERE id = ?";
-
-        try {
-            conn = ConnectionFactory.createConnection();
-            PreparedStatement pstm = conn.prepareStatement(sql);
-            pstm.setInt(1, id);
-
-            pstm.execute();
-        }
-        catch (Exception e) {
-            TicketSystem.getMain().getLogger().warning("Ошибка при удалении предложения");
-        }
-        finally {
-            try {
-                if (conn != null) conn.close();
-            }
-            catch (Exception e) {
-                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
-            }
-        }
+        Database.update("DELETE FROM suggestion WHERE id = ?", st -> st.setInt(1, id));
     }
 
     public void update(SuggestionModel suggestion) {
-        Connection conn = null;
-        String sql = "UPDATE suggestion SET response = ?, respondedBy = ?, respondedAt = ?, send = ? WHERE id = ?";
-
-        try {
-            conn = ConnectionFactory.createConnection();
-            PreparedStatement pstm = conn.prepareStatement(sql);
-            pstm.setString(1, suggestion.getResponse());
-            pstm.setString(2, suggestion.getRespondedBy());
-            pstm.setTimestamp(3, suggestion.getRespondedAt());
-            pstm.setBoolean(4, suggestion.getSend());
-            pstm.setInt(5, suggestion.getId());
-
-            pstm.executeUpdate();
-        }
-        catch (Exception e) {
-            TicketSystem.getMain().getLogger().warning("Ошибка при удалении предложения");
-        }
-        finally {
-            try {
-                if (conn != null) conn.close();
-            }
-            catch (Exception e) {
-                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
-            }
-        }
+        Database.update("UPDATE suggestion SET response = ?, respondedBy = ?, respondedAt = ?, send = ? WHERE id = ?", st -> {
+            st.setString(1, suggestion.getResponse());
+            st.setString(2, suggestion.getRespondedBy());
+            st.setTimestamp(3, suggestion.getRespondedAt());
+            st.setBoolean(4, suggestion.getSend());
+            st.setInt(5, suggestion.getId());
+        });
     }
 
     public SuggestionModel fetchById(int id) {
-        Connection conn = null;
-        String sql = "SELECT * FROM suggestion WHERE id = ?";
-        SuggestionModel suggestion = null;
-
-        if (id == 0) return null;
-
-        try {
-            conn = ConnectionFactory.createConnection();
-            PreparedStatement pstm = conn.prepareStatement(sql);
-            pstm.setInt(1, id);;
-
-            ResultSet rset = pstm.executeQuery();
-
-            suggestion = new SuggestionModel(
-                    rset.getInt(1),
-                    rset.getString(2),
-                    rset.getString(3),
-                    rset.getString(4),
-                    rset.getString(5),
-                    rset.getTimestamp(6),
-                    rset.getBoolean(7),
-                    rset.getTimestamp(8)
-            );
-        }
-        catch (Exception e) {
-            TicketSystem.getMain().getLogger().warning("Ошибка при создании предложения");
-        }
-        finally {
-            try {
-                if (conn != null) conn.close();
-            }
-            catch (Exception e) {
-                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
-            }
-        }
-        return suggestion;
+        if (id <= 0) return null;
+        return Database.queryOne("SELECT * FROM suggestion WHERE id = ?", st -> st.setInt(1, id), SuggestionController::map);
     }
 
     public List<SuggestionModel> fetchAll() {
-        String sql = "SELECT * FROM suggestion";
-        return search(sql);
+        return Database.query("SELECT * FROM suggestion", SuggestionController::map);
     }
 
     public List<SuggestionModel> fetchNotAnswered() {
-        String sql = "SELECT * FROM suggestion WHERE response IS NULL";
-        return search(sql);
+        return Database.query("SELECT * FROM suggestion WHERE response IS NULL", SuggestionController::map);
     }
 
     public List<SuggestionModel> fetchAnsweredBy(String player) {
-        String sql = "SELECT * FROM suggestion WHERE respondedBy = ?";
-        return searchByPlayer(sql, player);
+        return searchByPlayer("SELECT * FROM suggestion WHERE respondedBy = ?", player);
     }
 
     public List<SuggestionModel> fetchNotSendToPlayer(String player) {
-        String sql = "SELECT * FROM suggestion WHERE player = ? and NOT send";
-        return searchByPlayer(sql, player);
+        return searchByPlayer("SELECT * FROM suggestion WHERE player = ? AND NOT send AND response IS NOT NULL", player);
+    }
+
+    public int countOpenByPlayer(String player) {
+        return Database.count("SELECT COUNT(*) FROM suggestion WHERE player = ? AND response IS NULL", st -> st.setString(1, player));
     }
 }

@@ -65,8 +65,31 @@ ticket:
   use_correct: "&cCorrect use: /ticket <doubt>"
   not_found: "&cTicket not found or already answered"
   empty: "&aNo ticket found"
-  shot: "&cPlease, explain better your doubt"
-  success: "&aTicket sent successfully"
+  shot: "&cPlease explain your question in more detail (at least &f<min>&c words)."
+  success: "&aTicket sent successfully. Track it: [&f[/ticket my]](/ticket my hover=&aMy tickets)"
+  my:
+    empty: "&aYou have no tickets yet."
+    not_found: "&cTicket not found."
+    header: "\n&f&l» &bYour tickets &7(page &f<self>&7 of &f<total>&7) &f&l«"
+    list: "&7#<id> &f<ticket-shot> &7— <state> <button-view>"
+    state:
+      pending: "&ewaiting for answer"
+      answered: "&aanswered"
+    view:
+      - "\n&b&m--------------------------------------------------"
+      - "&eTicket: &f#<id>"
+      - "&eQuestion: &f<ticket>"
+      - "&eStatus: &ewaiting for answer"
+      - "&b&m--------------------------------------------------"
+    view-response:
+      - "\n&b&m--------------------------------------------------"
+      - "&eTicket: &f#<id>"
+      - "&eQuestion: &f<ticket>"
+      - "&eResponse: &f<response>"
+      - "&eAnswered by: &f<respondedBy>"
+      - "&eRating: <rating>"
+      - "&eRate the answer: <ratings>"
+      - "&b&m--------------------------------------------------"
   pending: "&bWe currently have &f<total> &bpending tickets"
   rating_canceled: "&aAssessment successfully canceled"
   is_canceled: "&cThe rating has already been canceled."
@@ -113,6 +136,8 @@ ticket:
   help:
     - "\n&b&m--------------------------------------------------"
     - "&e/ticket &7- &fSend a doubt"
+    - "&e/ticket my &7- &fMy tickets"
+    - "&e/ticket menu &7- &fTickets menu"
     - "&e/ticket list &7- &fList pending tickets"
     - "&e/ticket response &7- &fResponse a ticket"
     - "&e/ticket view &7- &fShow details of a ticket"
@@ -153,7 +178,8 @@ report:
   use_correct: "&cCorrect use: /report <player> [proof] [reason]"
   not_found: "&cReport not found or already verified"
   empty: "&aNo reports found :C"
-  not_yourself: "&cYou cannot report yourselfo"
+  not_yourself: "&cYou cannot report yourself"
+  shot: "&cPlease explain the reason in more detail (at least &f<min>&c words)."
   success: "&aSuccessfully reported player, thanks"
   pending: "&bWe currently have &f<total> &bpending reports"
   new_report: "&bNew report received <button-list>"
@@ -204,7 +230,7 @@ suggestion:
   use_correct: "&cCorrect use: /suggestion <suggestion>"
   not_found: "&cSugestão not found or already answered"
   empty: "&aNo suggestion found :C"
-  shot: "&cPlease, explain better your suggestion"
+  shot: "&cPlease explain your suggestion in more detail (at least &f<min>&c words)."
   success: "&aSuggestion sent successfully"
   pending: "&bWe currently have &f<total> &bsuggestions waiting for response."
   new_suggestion: "&bNew suggestion received <button-list>"
@@ -263,3 +289,127 @@ support-announcement:
   button-help:
     label: "&e[Ask help]"
     hover: "&eAsk for help to &f<player>"
+anti-spam:
+  cooldown: "&cPlease wait &f<time> s&c before sending again."
+  max_open:
+    ticket: "&cYou already have &f<max>&c unanswered tickets. Wait for an answer: [&f[/ticket my]](/ticket my hover=&aMy tickets)"
+    report: "&cYou already have &f<max>&c pending reports. Wait until staff reviews them."
+    suggestion: "&cYou already have &f<max>&c unanswered suggestions. Wait for an answer."
+gui:
+  disabled: "&cThe menu is disabled on this server."
+  ask-hint: "&bWrite your question: [&a[Click to start]](suggest_command=/ticket  hover=&aPut /ticket into chat)"
+  date-format: "yyyy-MM-dd HH:mm"
+  title:
+    main: "&8Ticket system"
+    tickets: "&8Tickets &7(<page>/<pages>)"
+    reports: "&8Reports &7(<page>/<pages>)"
+    suggestions: "&8Suggestions &7(<page>/<pages>)"
+    my-tickets: "&8My tickets &7(<page>/<pages>)"
+  main:
+    ask:
+      name: "&eAsk a question"
+      lore:
+        - "&7Staff will answer"
+        - "&7as soon as possible."
+        - ""
+        - "&eClick to write"
+    my-tickets:
+      name: "&aMy tickets"
+      lore:
+        - "&7Total: &f<count>"
+        - ""
+        - "&eClick to open"
+    tickets:
+      name: "&bTickets"
+      lore:
+        - "&7Waiting for answer: &f<count>"
+        - ""
+        - "&eClick to open"
+    reports:
+      name: "&cReports"
+      lore:
+        - "&7Pending: &f<count>"
+        - ""
+        - "&eClick to open"
+    suggestions:
+      name: "&eSuggestions"
+      lore:
+        - "&7Waiting for answer: &f<count>"
+        - ""
+        - "&eClick to open"
+  item:
+    ticket:
+      name: "&bTicket &f#<id>"
+      lore:
+        - "&7Player: &f<player>"
+        - "&7Created: &f<date>"
+        - ""
+        - "&7Question:"
+        - "&f<text>"
+        - ""
+        - "&eLeft click &7— open and answer"
+        - "&eRight click &7— teleport to player"
+    report:
+      name: "&cReport &f#<id>"
+      lore:
+        - "&7From: &f<player>"
+        - "&7Against: &f<reported>"
+        - "&7Status: <status>"
+        - "&7Created: &f<date>"
+        - ""
+        - "&7Reason:"
+        - "&f<text>"
+        - "&7Evidence:"
+        - "&f<evidence>"
+        - ""
+        - "&eLeft click &7— open and change status"
+        - "&eRight click &7— teleport to reported player"
+    suggestion:
+      name: "&eSuggestion &f#<id>"
+      lore:
+        - "&7Player: &f<player>"
+        - "&7Created: &f<date>"
+        - ""
+        - "&f<text>"
+        - ""
+        - "&eClick to open and answer"
+    my-ticket-pending:
+      name: "&bTicket &f#<id> &7— <state>"
+      lore:
+        - "&7Created: &f<date>"
+        - ""
+        - "&7Question:"
+        - "&f<text>"
+        - ""
+        - "&eClick to open in chat"
+    my-ticket-answered:
+      name: "&bTicket &f#<id> &7— <state>"
+      lore:
+        - "&7Created: &f<date>"
+        - ""
+        - "&7Question:"
+        - "&f<text>"
+        - ""
+        - "&7Answer from &f<respondedBy>&7:"
+        - "&a<response>"
+        - ""
+        - "&7Rating: <rating>"
+        - ""
+        - "&eClick to open in chat and rate"
+  buttons:
+    previous:
+      name: "&fPage <page>"
+      lore:
+        - "&7Previous page"
+    next:
+      name: "&fPage <page>"
+      lore:
+        - "&7Next page"
+    back:
+      name: "&fBack"
+      lore:
+        - "&7To main menu"
+  empty:
+    name: "&7Nothing here yet"
+  filler:
+    name: " "

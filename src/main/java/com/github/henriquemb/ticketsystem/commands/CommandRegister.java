@@ -12,5 +12,6 @@ public class CommandRegister {
         pl.getCommand("suggestion").setExecutor(new SuggestionCommand());
         pl.getCommand("suggestions").setExecutor(new SuggestionsCommand());
         pl.getCommand("ticketsystem").setExecutor(new TicketSystemCommand());
+        pl.getCommand("ticketmenu").setExecutor(new MenuCommand());
     }
 }

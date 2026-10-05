@@ -1,241 +1,90 @@
 package com.github.henriquemb.ticketsystem.database.controller;
 
-import com.github.henriquemb.ticketsystem.TicketSystem;
-import com.github.henriquemb.ticketsystem.database.factory.ConnectionFactory;
+import com.github.henriquemb.ticketsystem.database.Database;
 import com.github.henriquemb.ticketsystem.database.model.TicketModel;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.List;
 
 public class TicketController {
-    private List<TicketModel> search(String sql) {
-        Connection conn = null;
-        List<TicketModel> tickets = new ArrayList<>();
-
-        try {
-            conn = ConnectionFactory.createConnection();
-            ResultSet rset = conn.prepareStatement(sql).executeQuery();
-
-            while (rset.next()) {
-                tickets.add(new TicketModel(
-                        rset.getInt(1),
-                        rset.getString(2),
-                        rset.getString(3),
-                        rset.getString(4),
-                        rset.getString(5),
-                        rset.getTimestamp(6),
-                        rset.getDouble(7),
-                        rset.getBoolean(8),
-                        rset.getTimestamp(9)
-                ));
-            }
-        }
-        catch (Exception e) {
-            TicketSystem.getMain().getLogger().warning("Ошибка при получении тикетов");
-        }
-        finally {
-            try {
-                if (conn != null) conn.close();
-            }
-            catch (Exception e) {
-                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
-            }
-        }
-
-        return tickets;
+    private static TicketModel map(ResultSet rs) throws SQLException {
+        return new TicketModel(
+                rs.getInt("id"),
+                rs.getString("player"),
+                rs.getString("request"),
+                rs.getString("response"),
+                rs.getString("respondedBy"),
+                rs.getTimestamp("respondedAt"),
+                rs.getDouble("rating"),
+                rs.getBoolean("send"),
+                rs.getTimestamp("timestamp")
+        );
     }
 
     private List<TicketModel> searchByPlayer(String sql, String player) {
-        Connection conn = null;
-        List<TicketModel> tickets = new ArrayList<>();
-
-        try {
-            conn = ConnectionFactory.createConnection();
-            PreparedStatement pstm = conn.prepareStatement(sql);
-            pstm.setString(1, player);
-
-            ResultSet rset = pstm.executeQuery();
-
-            while (rset.next()) {
-                tickets.add(new TicketModel(
-                        rset.getInt(1),
-                        rset.getString(2),
-                        rset.getString(3),
-                        rset.getString(4),
-                        rset.getString(5),
-                        rset.getTimestamp(6),
-                        rset.getDouble(7),
-                        rset.getBoolean(8),
-                        rset.getTimestamp(9)
-                ));
-            }
-        }
-        catch (Exception e) {
-            TicketSystem.getMain().getLogger().warning("Ошибка при получении тикетов");
-        }
-        finally {
-            try {
-                if (conn != null) conn.close();
-            }
-            catch (Exception e) {
-                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
-            }
-        }
-
-        return tickets;
+        return Database.query(sql, st -> st.setString(1, player), TicketController::map);
     }
 
     public int create(String player, String request) {
-        Connection conn = null;
-        String sql = "INSERT INTO ticket (player, request) VALUES (?, ?)";
-        int id = 0;
-
-        try {
-            conn = ConnectionFactory.createConnection();
-            PreparedStatement pstm = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            pstm.setString(1, player);
-            pstm.setString(2, request);
-
-            pstm.executeUpdate();
-
-            ResultSet rs = pstm.getGeneratedKeys();
-            if(rs.next()) id = rs.getInt(1);
-        }
-        catch (Exception e) {
-            TicketSystem.getMain().getLogger().warning("Ошибка при создании тикета");
-        }
-        finally {
-            try {
-                if (conn != null) conn.close();
-            }
-            catch (Exception e) {
-                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
-            }
-        }
-
-        return id;
+        return Database.insert("INSERT INTO ticket (player, request) VALUES (?, ?)", st -> {
+            st.setString(1, player);
+            st.setString(2, request);
+        });
     }
 
     public void delete(int id) {
-        Connection conn = null;
-        String sql = "DELETE FROM ticket WHERE id = ?";
-
-        try {
-            conn = ConnectionFactory.createConnection();
-            PreparedStatement pstm = conn.prepareStatement(sql);
-            pstm.setInt(1, id);
-
-            pstm.execute();
-        }
-        catch (Exception e) {
-            TicketSystem.getMain().getLogger().warning("Ошибка при удалении тикета");
-        }
-        finally {
-            try {
-                if (conn != null) conn.close();
-            }
-            catch (Exception e) {
-                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
-            }
-        }
+        Database.update("DELETE FROM ticket WHERE id = ?", st -> st.setInt(1, id));
     }
 
     public void update(TicketModel ticket) {
-        Connection conn = null;
-        String sql = "UPDATE ticket SET response = ?, respondedBy = ?, respondedAt = ?, rating = ?, send = ? WHERE id = ?";
-
-        try {
-            conn = ConnectionFactory.createConnection();
-            PreparedStatement pstm = conn.prepareStatement(sql);
-            pstm.setString(1, ticket.getResponse());
-            pstm.setString(2, ticket.getRespondedBy());
-            pstm.setTimestamp(3, ticket.getRespondedAt());
-            pstm.setDouble(4, ticket.getRating());
-            pstm.setBoolean(5, ticket.getSend());
-            pstm.setInt(6, ticket.getId());
-
-            pstm.executeUpdate();
-        }
-        catch (Exception e) {
-            TicketSystem.getMain().getLogger().warning("Ошибка при обновлении тикета");
-        }
-        finally {
-            try {
-                if (conn != null) conn.close();
-            }
-            catch (Exception e) {
-                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
-            }
-        }
+        Database.update("UPDATE ticket SET response = ?, respondedBy = ?, respondedAt = ?, rating = ?, send = ? WHERE id = ?", st -> {
+            st.setString(1, ticket.getResponse());
+            st.setString(2, ticket.getRespondedBy());
+            st.setTimestamp(3, ticket.getRespondedAt());
+            st.setDouble(4, ticket.getRating());
+            st.setBoolean(5, ticket.getSend());
+            st.setInt(6, ticket.getId());
+        });
     }
 
     public TicketModel fetchById(int id) {
-        Connection conn = null;
-        TicketModel ticket = null;
-        String sql = "SELECT * FROM ticket WHERE id = ?";
-
-        if (id == 0) return null;
-
-        try {
-            conn = ConnectionFactory.createConnection();
-            PreparedStatement pstm = conn.prepareStatement(sql);
-            pstm.setInt(1, id);
-
-            ResultSet rset = pstm.executeQuery();
-
-            ticket = new TicketModel(
-                    rset.getInt(1),
-                    rset.getString(2),
-                    rset.getString(3),
-                    rset.getString(4),
-                    rset.getString(5),
-                    rset.getTimestamp(6),
-                    rset.getDouble(7),
-                    rset.getBoolean(8),
-                    rset.getTimestamp(9)
-            );
-        }
-        catch (Exception e) {
-            TicketSystem.getMain().getLogger().warning("Ошибка при получении тикета");
-        }
-        finally {
-            try {
-                if (conn != null) conn.close();
-            }
-            catch (Exception e) {
-                TicketSystem.getMain().getLogger().warning("Ошибка при закрытии соединения с базой данных");
-            }
-        }
-
-        return ticket;
+        if (id <= 0) return null;
+        return Database.queryOne("SELECT * FROM ticket WHERE id = ?", st -> st.setInt(1, id), TicketController::map);
     }
 
     public List<TicketModel> fetchAll() {
-        String sql = "SELECT * FROM ticket";
-        return search(sql);
+        return Database.query("SELECT * FROM ticket", TicketController::map);
     }
 
     public List<TicketModel> fetchNotAnswered() {
-        String sql = "SELECT * FROM ticket WHERE response IS NULL";
-        return search(sql);
+        return Database.query("SELECT * FROM ticket WHERE response IS NULL", TicketController::map);
     }
 
     public List<TicketModel> fetchAllAnswered() {
-        String sql = "SELECT * FROM ticket WHERE response NOT NULL";
-        return search(sql);
+        return Database.query("SELECT * FROM ticket WHERE response IS NOT NULL", TicketController::map);
     }
 
     public List<TicketModel> fetchAnsweredBy(String player) {
-        String sql = "SELECT * FROM ticket WHERE respondedBy = ?";
-        return searchByPlayer(sql, player);
+        return searchByPlayer("SELECT * FROM ticket WHERE respondedBy = ?", player);
     }
 
     public List<TicketModel> fetchNotSendToPlayer(String player) {
-        String sql = "SELECT * FROM ticket WHERE player = ? and NOT send and response NOT NULL";
-        return searchByPlayer(sql, player);
+        return searchByPlayer("SELECT * FROM ticket WHERE player = ? AND NOT send AND response IS NOT NULL", player);
+    }
+
+    /**
+     * Все тикеты игрока, новые сверху.
+     */
+    public List<TicketModel> fetchByPlayer(String player) {
+        return searchByPlayer("SELECT * FROM ticket WHERE player = ? ORDER BY id DESC", player);
+    }
+
+    public int countNotAnswered() {
+        return Database.count("SELECT COUNT(*) FROM ticket WHERE response IS NULL", st -> { });
+    }
+
+    public int countOpenByPlayer(String player) {
+        return Database.count("SELECT COUNT(*) FROM ticket WHERE player = ? AND response IS NULL", st -> st.setString(1, player));
     }
 }

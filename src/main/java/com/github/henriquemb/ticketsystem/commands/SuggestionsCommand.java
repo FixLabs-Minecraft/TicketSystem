@@ -58,7 +58,7 @@ public class SuggestionsCommand implements CommandExecutor {
             return true;
         }
 
-        Pagination<SuggestionModel> pagination = new Pagination<>(suggestions, 10);
+        Pagination<SuggestionModel> pagination = new Pagination<>(suggestions, TicketSystem.getSettings().getPageSize());
 
         try {
             StringBuilder str = new StringBuilder();

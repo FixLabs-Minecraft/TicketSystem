@@ -7,10 +7,10 @@ import com.github.henriquemb.ticketsystem.database.model.TicketModel;
 import com.github.henriquemb.ticketsystem.enums.TicketRatingEnum;
 import com.github.henriquemb.ticketsystem.exceptions.PaginationException;
 import com.github.henriquemb.ticketsystem.util.Pagination;
+import com.github.henriquemb.ticketsystem.util.AntiSpam;
 import com.github.henriquemb.ticketsystem.util.PrepareMessages;
 import com.github.henriquemb.ticketsystem.util.ResponseMessages;
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -70,6 +70,13 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
             case "ajuda":
                 help(p);
                 break;
+            case "my":
+            case "moi":
+                my(p, args);
+                break;
+            case "menu":
+                MenuCommand.open(p);
+                break;
             default:
                 create(p, args);
         }
@@ -81,11 +88,16 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> tb = new ArrayList<>();
 
-        if (sender.hasPermission("ticketsystem.suggestion.staff")) {
+        if (args.length <= 1) {
+            tb.add("help");
+            tb.add("my");
+            tb.add("rate");
+            if (TicketSystem.getSettings().isGuiEnabled()) tb.add("menu");
+        }
+
+        if (sender.hasPermission("ticketsystem.ticket.staff")) {
             if (args.length <= 1) {
                 tb.add("cancelall");
-                tb.add("help");
-                tb.add("rate");
                 tb.add("response");
                 tb.add("stats");
                 tb.add("teleport");
@@ -145,19 +157,26 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        if (args.length < 4) {
-            m.sendMessage(p, messages.getString("ticket.shot"), "ticket");
+        String request = String.join(" ", args);
+
+        if (!AntiSpam.hasEnoughWords(request, "ticket")) {
+            m.sendMessage(p, messages.getString("ticket.shot")
+                    .replace("<min>", String.valueOf(TicketSystem.getSettings().limits("ticket").minWords())), "ticket");
             return;
         }
 
-        String request = String.join(" ", args);
+        if (!AntiSpam.check(p, "ticket")) return;
 
-        controller.create(p.getName(), request);
+        if (controller.create(p.getName(), request) <= 0) {
+            m.sendMessage(p, messages.getString("error"), "ticket");
+            return;
+        }
+        AntiSpam.mark(p, "ticket");
         m.sendMessage(p, messages.getString("ticket.success"), "ticket");
 
         Bukkit.getOnlinePlayers().forEach(player -> {
             if (player.hasPermission("ticketsystem.ticket.staff")) {
-                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 100, 1);
+                TicketSystem.getSettings().playNotification(player);
                 m.sendMessage(player,
                         Objects.requireNonNull(messages.getString("ticket.new_ticket"))
                                 .replace("<button-list>",
@@ -172,31 +191,27 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
     }
 
     private void view(Player p, int id) {
-        if (!p.hasPermission("ticketsystem.ticket.staff")) {
-            m.sendMessage(p, messages.getString("permission.no_permission"), "ticket");
-            return;
-        }
-
         if (id <= 0) {
             m.sendMessage(p, messages.getString("warnings.invalid_id"), "ticket");
             return;
         }
 
         TicketModel ticket = controller.fetchById(id);
+        boolean staff = p.hasPermission("ticketsystem.ticket.staff");
 
-        if (ticket == null) {
-            m.sendMessage(p, messages.getString("ticket.not_found"), "ticket");
+        if (ticket == null || (!staff && !ticket.getPlayer().equalsIgnoreCase(p.getName()))) {
+            m.sendMessage(p, messages.getString(staff ? "ticket.not_found" : "ticket.my.not_found"), "ticket");
             return;
         }
 
         StringBuilder str = new StringBuilder();
 
-        if (ticket.getResponse() != null) {
-            if (!p.hasPermission("ticketsystem.ticket.staff")) {
-                m.sendMessage(p, messages.getString("permission.no_permission"), "ticket");
-                return;
-            }
+        if (!staff) {
+            viewOwn(p, ticket);
+            return;
+        }
 
+        if (ticket.getResponse() != null) {
             for (String msg : messages.getStringList("ticket.view-response")) {
                 str.append(msg.concat("\n"));
             }
@@ -256,8 +271,84 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
                 new ResponseMessages().getTicketResponse(ticket) +
                 messages.getString("ticket.response.message.footer");
 
-        t.playSound(t.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 100, 1);
+        TicketSystem.getSettings().playNotification(t);
         m.sendMessage(t, str);
+    }
+
+    /**
+     * Просмотр тикета его автором: без кнопок персонала, с кнопками оценки, если ответ ещё не оценён.
+     */
+    private void viewOwn(Player p, TicketModel ticket) {
+        boolean answered = ticket.getResponse() != null;
+        boolean canRate = answered && ticket.getRating() == TicketRatingEnum.UNAVAILABLE.getRate();
+
+        StringBuilder str = new StringBuilder();
+        for (String msg : messages.getStringList(answered ? "ticket.my.view-response" : "ticket.my.view")) {
+            if (msg.contains("<ratings>") && !canRate) continue;
+            str.append(msg.concat("\n"));
+        }
+
+        String result = new PrepareMessages().ticketViewMessage(str.toString(), ticket)
+                .replace("<ratings>", canRate ? new ResponseMessages().ratingButtons(ticket) : "");
+        m.sendMessage(p, result);
+    }
+
+    private void my(Player p, String[] args) {
+        if (!p.hasPermission("ticketsystem.ticket.use")) {
+            m.sendMessage(p, messages.getString("permission.no_permission"), "ticket");
+            return;
+        }
+
+        int pag = 1;
+        if (args.length >= 2) {
+            try {
+                pag = Integer.parseInt(args[1]);
+            }
+            catch (NumberFormatException e) {
+                m.sendMessage(p, messages.getString("pagination.error.invalid"), "ticket");
+                return;
+            }
+        }
+
+        List<TicketModel> tickets = controller.fetchByPlayer(p.getName());
+        if (tickets.isEmpty()) {
+            m.sendMessage(p, messages.getString("ticket.my.empty"), "ticket");
+            return;
+        }
+
+        Pagination<TicketModel> pagination = new Pagination<>(tickets, TicketSystem.getSettings().getPageSize());
+
+        try {
+            StringBuilder str = new StringBuilder();
+            str.append(messages.getString("ticket.my.header")
+                    .replace("<self>", String.valueOf(pag))
+                    .replace("<total>", String.valueOf(pagination.length())));
+
+            for (TicketModel t : pagination.getPag(pag)) {
+                String state = messages.getString(t.getResponse() == null ? "ticket.my.state.pending" : "ticket.my.state.answered");
+                str.append("\n").append(new PrepareMessages().ticketViewMessage(messages.getString("ticket.my.list"), t)
+                        .replace("<state>", state));
+            }
+
+            String footer = messages.getString("pagination.footer")
+                    .replace("<button-back>", pag > 1
+                            ? String.format("[%s](/ticket my %d hover=%s)",
+                            messages.getString("pagination.buttons.back.label"),
+                            pag - 1,
+                            messages.getString("pagination.buttons.back.hover")) : "")
+                    .replace("<button-next>", pagination.length() > pag
+                            ? String.format("[%s](/ticket my %d hover=%s)",
+                            messages.getString("pagination.buttons.next.label"),
+                            pag + 1,
+                            messages.getString("pagination.buttons.next.hover")) : "");
+
+            if (pagination.length() > 1) str.append("\n").append(footer);
+
+            m.sendMessage(p, str.toString());
+        }
+        catch (PaginationException e) {
+            m.sendMessage(p, messages.getString("pagination.error.not_found"), "ticket");
+        }
     }
 
     private void help(Player p) {
@@ -340,7 +431,7 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
 
         Bukkit.getOnlinePlayers().forEach(player -> {
             if (player.hasPermission("ticketsystem.ticket.staff")) {
-                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 100, 1);
+                TicketSystem.getSettings().playNotification(player);
                 m.sendMessage(player,
                         Objects.requireNonNull(messages.getString("ticket.rating.announcement"))
                                 .replace("<player>", ticket.getRespondedBy())
@@ -396,7 +487,7 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
                 staffers.add(t.getRespondedBy());
             });
 
-            Pagination<String> pagination = new Pagination<>(List.copyOf(staffers), 10);
+            Pagination<String> pagination = new Pagination<>(List.copyOf(staffers), TicketSystem.getSettings().getPageSize());
 
             pagination.getPag(pag).forEach(s -> {
                 List<TicketModel> tickets = controller.fetchAnsweredBy(s);

@@ -9,12 +9,17 @@ import org.bukkit.configuration.file.FileConfiguration;
 public class ResponseMessages {
     private final FileConfiguration messages = TicketSystem.getMessages();
 
-    public String getTicketResponse(TicketModel ticket) {
+    public String ratingButtons(TicketModel ticket) {
         StringBuilder ratings = new StringBuilder();
         for (TicketRatingEnum tre : TicketRatingEnum.values()) {
             if (tre != TicketRatingEnum.CANCELED && tre != TicketRatingEnum.UNAVAILABLE)
                 ratings.append(String.format("[%s[%s]](/ticket rate %d %s hover=%s) ", tre.getColor(), tre.getName(), ticket.getId(), tre, tre.format()));
         }
+        return ratings.toString();
+    }
+
+    public String getTicketResponse(TicketModel ticket) {
+        String ratings = ratingButtons(ticket);
 
         StringBuilder str = new StringBuilder();
         for (String msg : messages.getStringList("ticket.response.message.content")) {

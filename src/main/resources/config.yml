@@ -2,5 +2,70 @@
 # В комплекте: russian, english. Можно создать свой файл по образцу russian.yml.
 language: russian
 
+# База данных
+database:
+  # sqlite — файл database.db в папке плагина (ничего настраивать не нужно)
+  # mysql  — внешний сервер MySQL/MariaDB, общий для нескольких серверов
+  type: sqlite
+  mysql:
+    host: localhost
+    port: 3306
+    database: ticketsystem
+    username: root
+    password: ""
+    # Дополнительные параметры JDBC-подключения
+    parameters: "useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=utf8"
+    # Максимальное количество соединений в пуле
+    pool-size: 5
+
+# Ограничения обращений (право ticketsystem.bypass.antispam отключает cooldown и max-open)
+#   min-words — минимум слов в тексте (для жалоб — в причине; 0 — причина необязательна)
+#   cooldown  — задержка между обращениями одного игрока, в секундах (0 — без задержки)
+#   max-open  — сколько обращений без ответа может быть у игрока одновременно (0 — без лимита)
+ticket:
+  min-words: 4
+  cooldown: 60
+  max-open: 3
+report:
+  min-words: 0
+  cooldown: 60
+  max-open: 5
+suggestion:
+  min-words: 4
+  cooldown: 120
+  max-open: 3
+
 # Задержка между использованиями /support (в минутах)
 support-cooldown: 10
+
+# Количество строк на одной странице списков в чате
+pagination:
+  page-size: 10
+
+# Звук для персонала о новых обращениях и для игрока об ответе.
+# Ключ звука Minecraft (например, block.note_block.pling) или "" — без звука.
+notifications:
+  sound: entity.experience_orb.pickup
+  volume: 1.0
+  pitch: 1.0
+
+# Меню (/ticketmenu, /ticket menu)
+gui:
+  enabled: true
+  # Материалы иконок (названия предметов Minecraft)
+  icons:
+    ask: OAK_SIGN
+    my-tickets: BOOK
+    tickets: PAPER
+    reports: BELL
+    suggestions: WRITABLE_BOOK
+    ticket: PAPER
+    report: RED_DYE
+    suggestion: WRITABLE_BOOK
+    my-ticket-pending: BOOK
+    my-ticket-answered: ENCHANTED_BOOK
+    previous: ARROW
+    next: ARROW
+    back: DARK_OAK_DOOR
+    empty: BARRIER
+    filler: GRAY_STAINED_GLASS_PANE

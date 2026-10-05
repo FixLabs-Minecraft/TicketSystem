@@ -19,7 +19,7 @@ public class Pagination<T> {
     }
 
     public List<T> getPag(int value) throws PaginationException {
-        if (value > length() || value < 0) throw new PaginationException();
+        if (value > length() || value < 1) throw new PaginationException();
 
         List<T> pag = new ArrayList<>();
 
